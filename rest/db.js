@@ -1,21 +1,7 @@
 const request = require('request'),
 redis = require('./redis.js');
-/*fs = require('fs');
-var obj = JSON.parse(fs.readFileSync('./config.json', 'utf8'));
-const username = obj.xmcuserid,
-      password = obj.xmcuserpassword,
-      port = obj.xmcport,
-      host = obj.xmchost,
-      sitetype = obj.xmchosttype,
-      hostXmcId = obj.xmchostid;*/
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-//dredis.client.flushall();
-
-/*(function () {
-    redis.client.hmset('xmchostid:' + hostXmcId,['xmchosttype', sitetype]);
-    redis.client.sadd( 'xmchosts', hostXmcId);
-}());*/
 
 var populateSites =  function(data, hostdata) {
     const rootNode = data.data.network.siteTree,
@@ -33,7 +19,7 @@ var populateSites =  function(data, hostdata) {
         ':devList', 'devId:' + hostXmcId + ':' + devId);
     });
     processSiteChilren(hostXmcId,rootNode,rootNode.children);
-}
+};
 
 var processSiteChilren = function (xmcSiteId,rootNode,children) {
     children.forEach((rootNodeChildren) => {
@@ -43,8 +29,8 @@ var processSiteChilren = function (xmcSiteId,rootNode,children) {
             function (err, resp) {
                 if (err)
                     console.log(err);
-                rootNode
-        });
+            }
+        );
         rootNodeChildren.devIdList.forEach((devId) => {
             redis.client.sadd('siteId:' + xmcSiteId+ ':'  + rootNodeChildren.id +
             ':devList', 'devId:' + xmcSiteId + ':' +devId);
@@ -58,11 +44,11 @@ var processSiteChilren = function (xmcSiteId,rootNode,children) {
         }
     });
 };
-var populateDeviceData =  function(data) {
+var populateDeviceData =  function(data,nodeInfo) {
     var devData = data.data.network.devices;
     if(devData) {
         devData.forEach((elem) =>  {
-            redis.client.hmset('devId:asobalkar-ubuntu:' + elem.deviceId, ['ip',
+            redis.client.hmset('devId:'+ nodeInfo.xmchostid + ':' + elem.deviceId, ['ip',
                 elem.ip, 'deviceName' ,elem.deviceName, 'sitePath',
                 elem.sitePath, 'deviceIdKey', 'devId:'+ elem.deviceId],
             function(err, resp){
@@ -112,7 +98,7 @@ var loadDeviceData = (data) => {
         body: '{"query" : "{network {devices{ip deviceId deviceName sitePath siteId }}}"}'
     }, function (error, response, body) {
         var jsonResp = JSON.parse(body);
-        populateDeviceData(jsonResp);
+        populateDeviceData(jsonResp,data);
         //console.log(jsonResp);
     });
 };
@@ -126,12 +112,5 @@ var addXmcHost = (data) => {
     loadDeviceData(data);
 };
 module.exports.addXmcHost = addXmcHost;
-/*redis.smembers('xmchosts').then((data)=>Promise.all(data.map((data)=>{
 
-//return redis.hgetall(val);
-    redis.hgetAll('xmchostid:' + data).then(function (data) {
-        loadXmcHostData(data);
-        loadDeviceData(data);
-    });
-};*/
 

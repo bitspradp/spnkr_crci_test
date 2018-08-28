@@ -1,7 +1,7 @@
 version: "3"
 services:
-    web:
-        image: abhsob/mom_poc_0817_dockerapp:1.0
+    rest:
+        image: abhsob/extreme_central:1.0
         ports:
             - "6080:6080"
         depends_on:
