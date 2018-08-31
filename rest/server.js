@@ -1,9 +1,10 @@
 const express = require('express'),
-  process = require('process'),
-  bodyParser = require('body-parser'),
-  redis = require('./redis.js'),
-  db = require('./db.js');
-
+      bodyParser = require('body-parser'),
+      config = require('./config.js'),
+      redis = require('./redis.js'),
+      db = require('./db.js'),
+      rest = '/rest';
+let logger = config.logger;
 var app = express();
 // parse application/json
 app.use(bodyParser.json());
@@ -26,13 +27,14 @@ app.use(function (req, res, next) {
     }
 });
 
-app.get('/deviceDataForSite/:siteId', (req, res) => {
+
+app.get(rest+'/devicesInSite/:siteId', (req, res) => {
     var siteId = req.params.siteId + ':devList';
     redis.smembers(siteId).then((data)=>Promise.all(data.map((val)=>{
         return redis.hgetall(val);
     }))).then((data)=>{
-        console.log(data);
-        res.send(data)
+        //nrconsole.log(data);
+        res.send(JSON.stringify(data));
     });
     //redis.smembers(siteId).then((data)=>Promise.all(data.map(redis.hgetall))).then((data)=>res.send(data));
 
@@ -54,45 +56,77 @@ var getChildren = function(node) {
     //return node;
 };
 
-app.get('/xmchosts', (req, res) => {
+app.get(rest+'/image', (req, res) => {
+    try {
+        let imageurl = req.query.imageurl;
+        let index = imageurl.indexOf("images") + 6;
+        res.sendFile(__dirname + '/images' + imageurl.substring(index));
+    }catch (err){
+        //console.error("File not found: " + err);
+        logger.debug("File not found: " + err);
+    }finally{
+        logger.debug("Got the file");
+    }
+
+});
+
+app.get(rest+'/domainNode/all', (req, res) => {
     var hosts = [];
     redis.smembers('xmchosts').then((data)=>Promise.all(data.map((data)=>{
-        let host = {hostid : data};
+        let host = {domainNodeId : data};
         //return redis.hgetall(val);
         return redis.hget('xmchosts:id:' + data, 'xmchosttype').then(function (data) {
-            host.sitetype = data;
+            host.domainNodeType = data;
             hosts.push(host);
         });
     }))).then((data)=>{
-        console.log(data);
-        res.send(hosts)
+        //console.log(data);
+        res.send(JSON.stringify(hosts));
     });
 });
 
-app.get('/sites/:hostId', (req, res) => {
+Object.unflatten = function(data) {
+    "use strict";
+    if (Object(data) !== data || Array.isArray(data))
+        return data;
+    var regex = /\.?([^.\[\]]+)|\[(\d+)\]/g,
+        resultholder = {};
+    for (var p in data) {
+        var cur = resultholder,
+            prop = "",
+            m;
+        while (m = regex.exec(p)) {
+            cur = cur[prop] || (cur[prop] = (m[2] ? [] : {}));
+            prop = m[2] || m[1];
+        }
+        cur[prop] = data[p];
+    }
+    return resultholder[""] || resultholder;
+};
+app.get(rest+'/sitesInDomainNode/:domainNodeId', (req, res) => {
     let returnData = {};
-    var hostId = req.params.hostId;
+    var hostId = req.params.domainNodeId;
     redis.hget('xmchostid:' + hostId, 'rootSite').then(function (data) {
         redis.hgetall(data).then(function (data) {
             //returnData.push(getChildren(data));
             let node = data;
+            node.chartData = (Object.unflatten(JSON.parse(node.chartData)));
             getChildren(node).then(function (data) {
-                res.send(node);
+                res.send(JSON.stringify(node));
             });
         });
     });
-    //})));
-    //res.send(returnData);
 });
 
-app.post('/xmchost', (req, res) => {
+app.post(rest+'/domainNode', (req, res) => {
     var data = req.body;
     //console.log(data);
     db.addXmcHost(data);
-    res.status(200).send('OK');
+    res.status(200).send('Adding the node. Please check the log for errors if site and device data is not found');
 });
-
-app.listen(6080,'0.0.0.0');
-//app.listen(3000);
-//redis.smembers("sites").then((data)=>Promise.all(data.map(redis.hgetall))).then((data)=>res.send(data));
-//redis.smembers("sites").then((data)=>Promise.all(data.map(function (data) {
+try {
+    app.listen(6080, '0.0.0.0');
+    logger.info("Now listening on port 6080");
+} catch (err) {
+    logger.error("Unable to bind to port " + err);
+}

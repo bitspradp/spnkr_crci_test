@@ -1,7 +1,15 @@
 const config = require('./config.js'),
-redis = require('redis');
+      redis = require('redis');
 
-var client = redis.createClient(config.redis_port, config.redis_host);
+let logger = config.logger;
+let client;
+try {
+    client = redis.createClient(config.redis_port, config.redis_host);
+}catch(error) {
+    logger.error('Error connecting to db: ' + error);
+}finally {
+    logger.debug('Got DB connection');
+}
 
 var get = (key) => {
   return new Promise((resolve, reject) => {
@@ -57,3 +65,4 @@ module.exports.hgetall = hgetall;
 module.exports.smembers = smembers;
 module.exports.lrange = lrange;
 module.exports.client = client;
+
