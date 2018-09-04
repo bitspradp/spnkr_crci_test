@@ -66,7 +66,7 @@ var processSiteChilren = function (xmcSiteId,rootNode,children) {
                     ':devList', 'devId:' + xmcSiteId + ':' + devId);
             });
 
-            redis.client.lpush('siteId:' + xmcSiteId + ':' + rootNode.id + ':children', 'siteId:' + xmcSiteId + ':' +
+            redis.client.sadd('siteId:' + xmcSiteId + ':' + rootNode.id + ':children', 'siteId:' + xmcSiteId + ':' +
                 rootNodeChildren.id);
             if (rootNodeChildren.children) {
 
@@ -81,6 +81,10 @@ var processSiteChilren = function (xmcSiteId,rootNode,children) {
 var populateDeviceData =  function(data,nodeInfo) {
     try {
         var devData = data.data.network.devices;
+        /*
+        {network {devices{ip status deviceId chassisId deviceDisplayFamily deviceName sysUpTime' +
+                ' sysContact sysLocation sitePath siteId firmware deviceData {assetTag, archiveId, jsonVendorProfile}}
+         */
         if (devData) {
             devData.forEach((elem) => {
                 redis.client.hmset('devId:' + nodeInfo.id + ':' + elem.deviceId, ['ip',
@@ -170,15 +174,18 @@ var loadDeviceData = (data) => {
     userid : user id
 }
  */
-var addXmcHost = (data) => {
+var addXmcHost = (data, refreshData) => {
     try {
         if (data) {
             /*
            redis.client.hmset('xmchosts:id:' + data.xmchostid, ['xmchosttype', data.xmchosttype, 'xmchost',
                 data.xmchost, 'xmcport', data.xmcport, 'xmcuserpassword', data.xmcuserpassword, 'xmcuserid', data.xmcuserid]);*/
-            redis.client.hmset('xmchosts:id:' + data.id, ['xmchosttype', data.type, 'xmchost',
-                data.address, 'xmcport', data.port, 'xmcuserpassword', data.userpassword, 'xmcuserid', data.userid]);
-            redis.client.sadd('xmchosts', data.id);
+            if(!refreshData) {
+                redis.client.hmset('xmchosts:id:' + data.id, ['xmchosttype', data.type, 'xmchost',
+                    data.address, 'xmcport', data.port, 'xmcuserpassword', data.userpassword, 'xmcuserid', data.userid,
+                    'xmchostid', data.id]);
+                redis.client.sadd('xmchosts', data.id);
+            }
         }
         loadXmcHostData(data);
         loadDeviceData(data);
@@ -188,6 +195,16 @@ var addXmcHost = (data) => {
         logger.info('Adding new host: ' + data.id);
     }
 };
+
+var getAllDomainNodes = () => {
+    return redis.smembers('xmchosts');
+};
+
+var getDomainNodeInfo = (domainNodeId) => {
+    return redis.hgetall('xmchosts:id:' + domainNodeId);
+};
 module.exports.addXmcHost = addXmcHost;
+module.exports.getAllDomainNodes = getAllDomainNodes;
+module.exports.getDomainNodeInfo = getDomainNodeInfo;
 
 

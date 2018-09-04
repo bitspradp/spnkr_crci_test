@@ -5,6 +5,7 @@ const opts = {
     dateFormat:'YYYY.MM.DD'
 };
 const log = require('simple-node-logger').createRollingFileLogger( opts );
+log.setLevel('debug');
 module.exports = {
     redis_host: 'redis',
     redis_port: 6379,

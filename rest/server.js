@@ -3,9 +3,12 @@ const express = require('express'),
       config = require('./config.js'),
       redis = require('./redis.js'),
       db = require('./db.js'),
-      rest = '/rest';
+      rest = '/rest'
+      asyncPolling = require('async-polling')  ;
+
 let logger = config.logger;
 var app = express();
+let stopPolling =  false;
 // parse application/json
 app.use(bodyParser.json());
 app.use(function (req, res, next) {
@@ -44,7 +47,7 @@ var getChildren = function(node) {
 
     return Promise.resolve().then(function() {
     node.children = [];
-    return redis.lrange(node.siteIdKey + ':children').then(function (data) {
+    return redis.smembers(node.siteIdKey + ':children').then(function (data) {
         return Promise.all(data.map(redis.hgetall)).then(function(data) {
             return Promise.all(data.map(function(val) {
                 node.children.push(val);
@@ -130,3 +133,34 @@ try {
 } catch (err) {
     logger.error("Unable to bind to port " + err);
 }
+
+var polling = asyncPolling(function (end) {
+    db.getAllDomainNodes().then((data) =>{
+        data.forEach((node) => {
+            db.getDomainNodeInfo(node).then((nodeInfo)=> {
+        /*
+                    redis.client.hmset('xmchosts:id:' + data.id, ['xmchosttype', data.type, 'xmchost',
+                data.address, 'xmcport', data.port, 'xmcuserpassword', data.userpassword, 'xmcuserid', data.userid]);
+         */
+                if(nodeInfo) {
+                    let nodeInfoObj = {
+                        id : nodeInfo.xmchostid,
+                        type: nodeInfo.xmchosttype,
+                        address: nodeInfo.xmchost,
+                        port : nodeInfo.xmcport,
+                        userpassword : nodeInfo.xmcuserpassword,
+                        userid : nodeInfo.xmcuserid
+                    };
+                    db.addXmcHost(nodeInfoObj,true);
+                }
+            });
+        });
+    });
+
+    end(null, 'running');
+    if(stopPolling) {
+        this.stop();
+    }
+}, 5*60*1000); //mins*60secs*1000
+
+polling.run();
