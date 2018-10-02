@@ -5,9 +5,13 @@ version: 2
 jobs:
  build:
    <<: *defaults
-   machine: true
+   docker:
+      - image: docker:stable
    steps:
      - checkout
+
+     - setup_remote_docker:
+         docker_layer_caching: true
      
      - run: |
          cd rest/
@@ -23,8 +27,12 @@ jobs:
 
  deploy:
    <<: *defaults
-   machine: true
+   docker:
+      - image: docker:stable
    steps:
+     - setup_remote_docker:
+         docker_layer_caching: true
+
      - attach_workspace:
          at: ~/build/rest/
 
