@@ -42,10 +42,10 @@ jobs:
          command: docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
      - run:
          name: Tag the docker image
-         command: docker tag $CIRCLE_PROJECT_REPONAME:dev $CIRCLE_PROJECT_USERNAME/saas_ux_test/$CIRCLE_PROJECT_REPONAME:dev
+         command: docker tag $CIRCLE_PROJECT_REPONAME:dev $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME:dev
      - run:
          name: Deploy saas_ux image to docker hub
-         command: docker push $CIRCLE_PROJECT_USERNAME/saas_ux_test/$CIRCLE_PROJECT_REPONAME:dev
+         command: docker push $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME:dev
 
 workflows:
   version: 2
