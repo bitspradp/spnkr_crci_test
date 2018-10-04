@@ -208,13 +208,10 @@ var getDomainNodeInfo = (domainNodeId) => {
     return redis.hgetall('xmchosts:id:' + domainNodeId);
 };
 
-var initialMockTestMethod = (input) => {
-    return input;
-};
 module.exports.addXmcHost = addXmcHost;
 module.exports.getAllDomainNodes = getAllDomainNodes;
 module.exports.getDomainNodeInfo = getDomainNodeInfo;
-module.exports.initialMockTestMethod = initialMockTestMethod;
+
 
 
 
