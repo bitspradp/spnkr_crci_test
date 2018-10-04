@@ -1,30 +1,62 @@
+defaults: &defaults
+  working_directory: /workspace
+
+  docker:
+     - image: docker:stable
+
 version: 2
 jobs:
  build:
-   machine: true
+   <<: *defaults
    steps:
      - checkout
-     
-     - run: |
-         cd rest
-         docker build -t $CIRCLE_PROJECT_REPONAME:dev .
-         echo "Successfully built docker image"
-         docker save -o $CIRCLE_PROJECT_REPONAME.tar $CIRCLE_PROJECT_REPONAME
-         echo "Successfully saved the docker image"
-         docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
-         echo "Successfully logged-in to docker"
-         docker tag $CIRCLE_PROJECT_REPONAME:dev $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME:dev
-         echo "Successfully tagged the image for upload" 
-         docker push $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME:dev
-         echo "Successfully pushed the image"
+
+     - setup_remote_docker:
+         docker_layer_caching: true
+
+     - run:
+         name: Build image
+         command: cd rest && docker build -t $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME:dev .
+     - run:
+         name: Save image
+         command: mkdir tar && docker save -o tar/$CIRCLE_PROJECT_REPONAME.tar $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
+     - persist_to_workspace:
+         root: /workspace
+         paths:
+           - tar
+
+ deploy:
+   <<: *defaults
+   steps:
+     - setup_remote_docker:
+         docker_layer_caching: true
+
+     - attach_workspace:
+         at: /workspace
+
+     - run:
+         name: Load image
+         command: cd tar && docker load -i $CIRCLE_PROJECT_REPONAME.tar
+     - run:
+         name: Login to docker hub
+         command: docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+     - run:
+         name: Deploy saas_ux image to docker hub
+         command: docker push $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME:dev
 
 workflows:
   version: 2
-  dev_stage_pre-prod:
+  commit-workflow:
     jobs:
       - build:
+          filters:
+            tags:
+              only:
+                - /.*/
+      - deploy:
+          requires:
+            - build
           filters:
             branches:
               only:
                 - master
-#                - /test_.*/
