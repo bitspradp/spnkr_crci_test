@@ -24,8 +24,5 @@
     "mocha": "^5.2.0",
     "rewire": "^4.0.1",
     "sinon": "^6.3.5"
-  },
-  "directories": {
-    "test": "test"
   }
 }
