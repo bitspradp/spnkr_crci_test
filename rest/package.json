@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "test": "cross-env NODE_ENV=dev ./node_modules/mocha/bin/mocha  ./test/*"
+    "test": "cross-env NODE_ENV=dev ./node_modules/mocha/bin/mocha  ./test/*.js"
   },
   "author": "",
   "license": "ISC",
@@ -24,5 +24,8 @@
     "mocha": "^5.2.0",
     "rewire": "^4.0.1",
     "sinon": "^6.3.5"
+  },
+  "directories": {
+    "test": "test"
   }
 }
