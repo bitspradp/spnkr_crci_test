@@ -70,8 +70,6 @@ workflows:
                 - /.*/
 
       - test:
-          requires:
-            - build
           filters:
             tags:
               only:
@@ -79,6 +77,7 @@ workflows:
 
       - deploy:
           requires:
+            - build
             - test
           filters:
             branches:
