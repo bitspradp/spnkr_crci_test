@@ -1,3 +1,5 @@
+"use strict";
+
 const chai = require('chai'),
       expect = chai.expect,
       sinon = require('sinon'),
