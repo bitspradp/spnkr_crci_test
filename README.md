@@ -16,7 +16,7 @@ The following tools are required for the build process:
 * Login to docker hub from user local node - docker login -u <DOCKER_USER> -p <DOCKER_PASSWORD>
 * Deploy the image to docker hub - "docker push <PROJECT_USERNAME>/<PROJECT_REPONAME>:<version>". (Ex: docker push extremenetworks/saas_ux_test:dev)
 
-### CI
+## CI
 Continuous Integration (CI) is the process of automating the build and testing of code every time a
 team member commits changes to version control (GitHub).
 
