@@ -35,5 +35,5 @@ Our PR's would need atleast one reviewer to approve the PR and post that it will
 
 When more in-depth investigation is needed, it's suggested to run the build locally.
 
-### Testing
+### Testcase Info
 Information related to automated tests for the rest interface can be found in rest folder under rest/test. 
