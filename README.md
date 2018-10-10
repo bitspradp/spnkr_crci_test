@@ -37,3 +37,6 @@ When more in-depth investigation is needed, it's suggested to run the build loca
 
 ### Testing
 Information related to automated tests for the rest interface can be found in rest folder under rest/test.
+Testing
+
+Information related to automated tests for the rest interface can be found in rest folder under rest/test.  
