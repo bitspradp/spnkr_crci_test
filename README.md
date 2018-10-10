@@ -31,7 +31,7 @@ Once the build and test are finished, they are visible via [red/green in PR stat
 #### Deploy
 Post the build and test task are completed successfully the github PR status will be updated as "All checks have passed" with a (GREEN check kick). 
 
-Our PR's would need atleast one reviewer to approve the PR and post that it will enable the "merge pull request". ON merging the changes to "master", the deploy task will post load the image tar created as part of the build task and post it to the docker hub.
+ PR's would need atleast one reviewer to approve and post that it will enable the "merge pull request". ON merging the changes to "master", the deploy task will post load the image tar created as part of the build task and post it to the docker hub.
 
 When more in-depth investigation is needed, it's suggested to run the build locally.
 
