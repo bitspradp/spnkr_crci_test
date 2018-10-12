@@ -1,0 +1,9 @@
+version: '2'
+services:
+  tests:
+      image: extremenetworks/saas_ux_test:dev
+      build:
+        context: .
+        dockerfile: Dockerfile.test
+#     tty: true   # Uncomment this line and comment next line to get a tty into the container. (Useful when debugging)
+      command: npm test
