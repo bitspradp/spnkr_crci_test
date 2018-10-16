@@ -1,12 +1,7 @@
 # SaaS_UX_test
 SaaS UX test repo 
 
-## Building Appliance
-### Requirements
-The following tools are required for the build process:
-- git
-- Docker - https://docs.docker.com/install/linux/docker-ce/ubuntu/#set-up-the-repository (docker version above - 17.0X.XX)
-- OS - Platform independent.
+## Building SaaS UI docker image
 
 ### Build Steps
 * clone the source code use git clone <repo URL> (Ex: https://github.com/extremenetworks/saas_ux_test)
@@ -16,11 +11,12 @@ The following tools are required for the build process:
 * Login to docker hub from user local node - docker login -u <DOCKER_USER> -p <DOCKER_PASSWORD>
 * Deploy the image to docker hub - "docker push <PROJECT_USERNAME>/<PROJECT_REPONAME>:<version>". (Ex: docker push extremenetworks/saas_ux_test:dev)
 
-### Manually running the test cases
-* cd to the workspace where our repo is cloned.
-* cd rest (at this directory level we have a package.json file created which has the list of packages and the subsequent version that is required.
-* Run "npm install" (will install all required packages mentioned inn package.json)
-* Run "npm test" (will execute all the mocha testcases and returns the result)
+### Dev CI
+The recommended approach is to run test inside docker containers so your dev machine is not polluted. Also, this is close to what circle ci does with running tests inside a container.
+
+To run tests with docker on your dev machine, please have [docker](https://docs.docker.com/) and docker compose installed.
+
+To run tests, do "docker-compose -f docker-compose-tests.yml up --build --exit-code-from tests"
 
 ## CI
 Continuous Integration (CI) is the process of automating the build and testing of code every time a
