@@ -5,7 +5,7 @@ SaaS UX test repo
 
 ## Building SaaS UI docker image
 
-### Build Steps
+### Dev Build
 * clone the source code use git clone <repo URL> (Ex: https://github.com/extremenetworks/saas_ux_test)
 * cd to rest folder
 * Docker build - Run command to compile and create a image "docker build -t <PROJECT_USERNAME>/<PROJECT_REPONAME>:<version> .". (Ex: docker build -t extremenetworks/saas_ux_test:dev .)
