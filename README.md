@@ -12,7 +12,7 @@ Run automatically on every pull request and on every commit. Please make sure ci
 #### Dev
 The recommended approach is to run test inside docker containers so your dev machine is not polluted. Also, this is close to what circle ci does with running tests inside a container.
 
-To run tests with docker on your dev machine, please have [docker](https://link_to_docker_ce_install pages) and docker compose installed.
+To run tests with docker on your dev machine, please have [docker](docs.docker.com/install/) and docker compose installed.
 
 To run tests, do
 
