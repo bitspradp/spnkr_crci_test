@@ -16,4 +16,4 @@ To run tests with docker on your dev machine, please have [docker](https://link_
 
 To run tests, do
 
-docker-compose -f docker-compose-tests.yml up --build --exit-code-from tests
+```docker-compose -f docker-compose-tests.yml up --build --exit-code-from tests ```
