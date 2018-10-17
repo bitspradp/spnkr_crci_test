@@ -1,4 +1,4 @@
-version: '2'
+version: '3'
 services:
   tests:
       image: extremenetworks/saas_ux_test:dev
