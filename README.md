@@ -1,7 +1,7 @@
 # SaaS_UX_test
 SaaS UX test repo 
 
-[![Packages Build Status](https://circleci.com/gh/extremenetworks/saas_ux_test/tree/master.svg?style=shield&circle-token=b619b21089647f85e198d5392e946a3c0fec7637)](https://circleci.com/gh/extremenetworks/saas_ux_test) [![Join our community Slack](https://stackstorm-community.herokuapp.com/badge.svg)](https://stackstorm.com/community-signup)
+[![Packages Build Status](https://circleci.com/gh/extremenetworks/saas_ux_test/tree/master.svg?style=shield&circle-token=b619b21089647f85e198d5392e946a3c0fec7637)](https://circleci.com/gh/extremenetworks/saas_ux_test)
 
 ## Building SaaS UI docker image
 
