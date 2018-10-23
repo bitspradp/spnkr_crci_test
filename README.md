@@ -7,10 +7,10 @@ SaaS UX test repo
 
 ### Testing
 #### Circle CI
-Run automatically on every pull request and on every commit. Please make sure circle ci is green before merging.
+Run automatically on every pull request and on every commit. Please make sure Circle CI is green before merging.
 
 #### Dev
-The recommended approach is to run test inside docker containers so your dev machine is not polluted. Also, this is close to what circle ci does with running tests inside a container.
+The recommended approach is to run test inside docker containers so your dev machine is not polluted. Also, this is close to what Circle CI does with running tests inside a container.
 
 To run tests with docker on your dev machine, please have [docker](docs.docker.com/install/) and [docker compose](https://docs.docker.com/compose/install/) installed.
 
