@@ -1,30 +1,29 @@
 defaults: &defaults
-  working_directory: /workspace
+  working_directory: /tmp/workspace
 
-  docker:
-     - image: docker:stable
-
-version: 2
+version: 2.1
+orbs:
+  anchore: anchore/anchore-engine@1.0.0
 jobs:
  build:
+   executor: anchore/anchore_engine
    <<: *defaults
    steps:
      - checkout
-
-     - setup_remote_docker:
-         docker_layer_caching: true
-
      - run:
          name: Build image
          command: cd rest && docker build -t $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME:dev .
      - run:
          name: Save image
          command: mkdir tar && docker save -o tar/$CIRCLE_PROJECT_REPONAME.tar $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME
-
      - persist_to_workspace:
-         root: /workspace
+         root: /tmp/workspace
          paths:
            - tar
+     - anchore/analyze_local_image:
+         image_name: ${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}:dev
+         timeout: '500'
+
 
  test:
    docker:
@@ -42,12 +41,15 @@ jobs:
 
  deploy:
    <<: *defaults
+   docker:
+      - image: docker:stable
+
    steps:
      - setup_remote_docker:
          docker_layer_caching: true
 
      - attach_workspace:
-         at: /workspace
+         at: /tmp/workspace
 
      - run:
          name: Load image
@@ -60,7 +62,7 @@ jobs:
          command: docker push $CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME:dev
 
 workflows:
-  version: 2
+  version: 2.1
   commit-workflow:
     jobs:
       - build:
