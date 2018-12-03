@@ -24,7 +24,6 @@ jobs:
          image_name: ${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}:dev
          timeout: '500'
 
-
  test:
    docker:
      - image: circleci/node:8.6
