@@ -8,7 +8,7 @@ steps:
     #Important: rename this image to to a valid repository in your registry. For example: myUserName/vote
     image_name: codefresh/example-build-push
     #Dockerfile location should be relative to the working directory
-    dockerfile: Dockerfile
+    dockerfile: rest/Dockerfile
 
   push_to_registry:
     title: Pushing to Docker Registry
