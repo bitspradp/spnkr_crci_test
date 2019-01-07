@@ -9,6 +9,15 @@ steps:
     image_name: bitspradp/cf_test
     #Dockerfile location should be relative to the working directory
     dockerfile: rest/Dockerfile
+  
+  unit_test:
+    image: node:latest
+    commands:
+        - cd rest
+        - npm install # command to start unit test
+        - npm -v
+        - npm test
+        - echo start test # command to start unit test
 
   push_to_registry:
     title: Pushing to Docker Registry
